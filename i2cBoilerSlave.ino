@@ -25,33 +25,30 @@ void setup()
  
 void loop()
 {
-  //1 = Assert off
-  //2 = Assert on, set to OFF
-  //3 = LOW
-  //4 = MEDIUM
-  //5 = HIGH
+  //1 = Assert on
+  //2 = OFF (Relay1 HIGH, Relay2 HIGH)
+  //3 = LOW (Relay1 HIGH, Relay2 LOW)
+  //4 = MEDIUM (Relay1 LOW, Relay2 HIGH)
+  //5 = HIGH (Relay1 LOW, Relay2 LOW)
   
   byte byteRcvd = 0;
-  if (TinyWireS.available()){           // got I2C input!
+  if (TinyWireS.available())
+  {           // got I2C input!
     byteRcvd = TinyWireS.receive();     // get the byte from master
-      switch (byteRcvd) {
-        case 0x01:                      //assert relay off
-          digitalWrite(Relay1_PIN, LOW);
-          digitalWrite(Relay2_PIN, LOW);
-          digitalWrite(Relay3_PIN, LOW);
-          digitalWrite(LED1_PIN, LOW);
-          digitalWrite(LED2_PIN, LOW);
-          digitalWrite(LED3_PIN, LOW);
+      switch (byteRcvd) 
+      {
+        case 0x01:                      //assert relay on
+          digitalWrite(Relay1_PIN, HIGH);
+          toggleLEDs();
         break;
         
-        case 0x02:                      //assert relay on (initialize, LED function test, and set to OFF)
-          digitalWrite(Relay1_PIN, HIGH);
+        case 0x02:                      //OFF
           digitalWrite(Relay2_PIN, HIGH);
           digitalWrite(Relay3_PIN, HIGH);
           digitalWrite(LED1_PIN, HIGH);
           digitalWrite(LED2_PIN, HIGH);
           digitalWrite(LED3_PIN, HIGH);
-          delay(1000);
+          delay(100);
           digitalWrite(LED1_PIN, LOW);
           digitalWrite(LED2_PIN, LOW);
           digitalWrite(LED3_PIN, LOW);
@@ -81,8 +78,21 @@ void loop()
           digitalWrite(LED3_PIN, HIGH);
         break;
         
-      }
- 
+      }//end switch case
+   }//end if TinyWireS.available
+}//end loop
+
+void toggleLEDs()
+{
+  digitalWrite(LED1_PIN, HIGH);
+  digitalWrite(LED2_PIN, LOW);
+  digitalWrite(LED3_PIN, HIGH);
+  for (int i = 0; i < 10; i++)
+  {
+    digitalWrite(LED1_PIN, !digitalRead(LED1_PIN));
+    digitalWrite(LED2_PIN, !digitalRead(LED2_PIN));
+    digitalWrite(LED3_PIN, !digitalRead(LED3_PIN));
+    delay(250);
   }
 }
 
