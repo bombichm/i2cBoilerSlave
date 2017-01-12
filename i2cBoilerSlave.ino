@@ -3,8 +3,9 @@
 //
  
 #include "TinyWireS.h"                  // wrapper class for I2C slave routines
- 
-#define I2C_SLAVE_ADDR  0x3            // i2c slave address
+#include <avr/wdt.h>
+
+#define I2C_SLAVE_ADDR  0x3            // i2c slave address (0x3 for boiler, 0x4 for furnace)
 #define Relay1_PIN  7
 #define Relay2_PIN  5
 #define Relay3_PIN  3
@@ -20,11 +21,15 @@ void setup()
   pinMode(LED1_PIN,OUTPUT);
   pinMode(LED2_PIN,OUTPUT);
   pinMode(LED3_PIN,OUTPUT);
+  
   TinyWireS.begin(I2C_SLAVE_ADDR);      // init I2C Slave mode
+  
+  wdt_enable(WDTO_8S);                  //8 second watchdog timer
 }
  
 void loop()
 {
+  wdt_reset();
   //1 = Assert on
   //2 = OFF (Relay1 HIGH, Relay2 HIGH)
   //3 = LOW (Relay1 HIGH, Relay2 LOW)
